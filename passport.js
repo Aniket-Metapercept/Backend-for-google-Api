@@ -1,5 +1,3 @@
-// const GOOGLE_CLIENT_ID = '1033549683997-g6hdcae9q5cvjc9pqtt98qquu4t4ojak.apps.googleusercontent.com'
-// const GOOGLE_CLIENT_SECRET = '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'
 
 // const passport = require('passport')
 // const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
