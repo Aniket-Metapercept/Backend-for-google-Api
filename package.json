@@ -13,9 +13,11 @@
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.2",
+    "googleapis": "^95.0.0",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",
     "passport-github2": "^0.1.12",
-    "passport-google-oauth2": "^0.2.0"
+    "passport-google-oauth2": "^0.2.0",
+    "passport-instagram": "^1.0.0"
   }
 }
