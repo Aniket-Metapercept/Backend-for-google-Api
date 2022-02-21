@@ -54,50 +54,28 @@ router.post('/addevents',async (req,res) =>{
 })
 
 router.post('/addevents2',async (req,res) =>{
-  console.log(req.body)
   
   var { summary, description, to, from, location, token }  = req.body
 
-    // var to = Date(to)
-    // var from = Date(from)
-
-
     // Call the setCredentials method on our oAuth2Client instance and set our refresh token.
     oAuth2Client.setCredentials({
-    // refresh_token: '1//04deCcZm249pKCgYIARAAGAQSNwF-L9IrIPLC5701gQNTJnYCiP9IEsCknDwfCern77Bn6NlP65CER2_GGiLXBSJMxWr3Z_NwhIQ',
-    access_token:token
-    // access_token:'ya29.A0ARrdaM-JNPquZ9i5gCCO1g6SvAkdVq_ibQJx2Kq7x5n6q0lFMFxnElmR42tDtIl-ppCWw_zJD5y230v8fZOxPOCmWELoKaWVAI7Qo1M6W28ChepX7_9hdZtsf5o8DT0KA5EoTuAwNqdKSK1QLbB__cktwSPS'
-    })
+     access_token:token
+     })
 
     // Create a new calender instance.
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client })
-    // f = Date(from)
-
-    // console.log(f.toISOString() , "from")
     
     // Create a new event start date instance for temp uses in our calendar.
     console.log(from)
     console.log(new Date(from).toISOString(),"segjwipehg")
-    // console.log(String(from).toISOString())
+    
 
     const eventStartTime = new Date(from).toISOString()
     console.log(eventStartTime)
-    // console.log(from.split('T')[0].split('-')[2])
-    // eventStartTime.setDate(from.split('T')[0].split('-')[2])
-    // eventStartTime.setMonth(from.split('-')[1])
-    // console.log(from.split('-')[1],"emeheh")
-    // eventStartTime.setHours(from.split('T')[1].split('-')[0].split(':')[0])
-    // eventStartTime.setMinutes(from.split('T')[1].split('-')[0].split(':')[1])
-
-    // eventStartTime.setTime(from.split('T')[1])
-
+ 
     // Create a new event end date instance for temp uses in our calendar.
     const eventEndTime = new Date(to).toISOString()
-    // console.log(eventEndTime.getDate())
-    // eventEndTime.setDate(to.split('T')[0].split('-')[2])
-    // eventEndTime.setMonth(to.split('-')[1])
-    // eventEndTime.setHours(to.split('T')[1].split('-')[0].split(':')[0])
-    // eventEndTime.setMinutes(to.split('T')[1].split('-')[0].split(':')[1])
+ 
 
     console.log(eventEndTime)
     // Create a dummy event for temp uses in our calendar
@@ -116,54 +94,42 @@ router.post('/addevents2',async (req,res) =>{
     },
     }
 
-    // console.log('data =>',data.summary )
-    // Check if we a busy and have an event on our calendar for the same time.
     calendar.freebusy.query(
-    {
-        resource: {
-        timeMin: eventStartTime,
-        timeMax: eventEndTime,
-        timeZone: 'America/Denver',
-        items: [{ id: 'primary' }],
-        },
-    },
-    (err, response) => {
-        // Check for errors in our query and log them if they exist.
-        if (err) {
-            console.error('Free Busy Query Error: ', err)
-            res.json("Error")
-            return 
-            }
-        // Create an array of all events on our calendar during that time.
+      {
+          resource: {
+          timeMin: eventStartTime,
+          timeMax: eventEndTime,
+          timeZone: 'America/Denver',
+          items: [{ id: 'primary' }],
+          },
+      }).then((response) => {
         const eventArr = response.data.calendars.primary.busy
+
         console.log(eventArr)
+        console.log(response.data)
         // Check if event array is empty which means we are not busy
-        if (eventArr.length === 0)
-        // If we are not busy create a new calendar event.
-        return calendar.events.insert(
-            { calendarId: 'primary', resource: event },
-            err => {
-            // Check for errors and log them if they exist.
+        if (eventArr.length === 0) {
+          calendar.events.insert(
+              { calendarId: 'primary', resource: event }
+            ).then((r)=>{
 
-            // if (err) return console.error('Error Creating Calender Event:', err)
-            
-            if (err) {
-              res.json("Error") 
+              // console.log(r)
+              res.json(r)
               return 
-            }
-            // Else log that the event was created.
-            // return console.log('Calendar event successfully created.')
-            res.json("Data Added Successfully") 
-            return
-            }
-        )
-
-        // If event array is not empty log that we are busy.
-        res.json(`Sorry I'm busy...`)
-        return 
-    }
-    )
-
+            }).catch((e)=>{
+              res.json(e) 
+              return 
+            })
+        } else {
+          res.json(response) // calendars: { primary: { busy: [Array] } }
+        }
+        
+      }).catch((err) => {
+            console.error('Free Busy Query Error: ', err)
+            res.json(err)
+            return 
+      });
+ 
 
 })
 
@@ -250,7 +216,7 @@ router.get('/geteventbyid/:id',(req,res)=>{
       console.log(response.data)
       res.json(response.data) 
     }).catch(e=>{
-      res.json("Not Found")
+      res.json(e)
     })
 
 })
@@ -259,20 +225,20 @@ router.get('/geteventbyid/:id',(req,res)=>{
 
 router.put('/update/:id',(req,res)=>{
   
-  console.log(req.body)
+  // console.log(req.body)
   oAuth2Client.setCredentials({
     access_token: access_token1
 }) 
-console.log(req.body.start.dateTime)
+// console.log(req.body.start.dateTime)
   req.body.start.dateTime = new Date(req.body.start.dateTime).toISOString()
   req.body.end.dateTime = new Date(req.body.end.dateTime).toISOString()
-  console.log(req.body.start.dateTime)
+  // console.log(req.body.start.dateTime)
   const calendar = google.calendar({ version: 'v3', auth: oAuth2Client })
 
   calendar.events.update({calendarId:'primary',eventId:req.params.id,requestBody:req.body})
     .then(function(response) {
       console.log(response.data)
-      res.json("update done successfully") 
+      res.json(response) 
     }).catch(e=>{
       res.send("err "+e)
     })
@@ -294,7 +260,7 @@ router.delete('/delete/:id',(req,res)=>{
   calendar.events.delete({calendarId:'primary',eventId:req.params.id})
     .then(function(response) {
       console.log(response.data)
-      res.json("Delete Successfully") 
+      res.json(response) 
     }).catch(e=>{
       res.json(e)
     })
