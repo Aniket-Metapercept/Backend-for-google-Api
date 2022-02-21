@@ -14,7 +14,7 @@ const router = require('express').Router()
 
 
 
-router.post('/addevents',async (req,res) =>{
+router.post('/createEvents',async (req,res) =>{
   
     var { summary, description, to, from, location, token }  = req.body
   
